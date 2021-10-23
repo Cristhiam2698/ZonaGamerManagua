@@ -1,0 +1,113 @@
+﻿@page "/producto"
+@using ZonaGamerN.Data;
+@inject ZonaGamerN.IRepositorio.IProductoRepositorio productoRepositorio;
+
+<h3>ProductoPage</h3>
+
+<div class="DivbasicForm">
+    <div class="row">
+        <div class="col-md-4">
+            <label>Nombre</label>
+            <input type="text" placeholder="Producto Nombre" @bind="@producto.Nombre" class="form-control" />
+        </div>
+        <div class="col-md-4">
+            <label>Categoria</label>
+            <input type="text" placeholder="Producto Categoria" @bind="@producto.Categoria" class="form-control" />
+        </div>
+        <div class="col-md-4">
+            <label>Marca</label>
+            <input type="text" placeholder="Producto Nombre" @bind="@producto.Marca" class="form-control" />
+        </div>
+        <div class="col-md-4">
+            <label>Precio_Compra</label>
+            <input type="text" placeholder="Producto Precio_Compra" @bind="@producto.Precio_Compra" class="form-control" />
+        </div>
+        <div class="col-md-4">
+            <label>Precio_Venta</label>
+            <input type="text" placeholder="Producto Precio_Venta" @bind="@producto.Precio_Venta" class="form-control" />
+        </div>
+        <div class="col-md-4">
+            <label>Descripcion</label>
+            <input type="text" placeholder="Producto Descripcion" @bind="@producto.Descripcion" class="form-control" />
+        </div>
+        <div class="col-md-4">
+            <label></label>
+            <button class="btn btn-success" style="margin-top: 30px;"@onclick="@Save">Save</button>
+        </div>
+    </div>
+</div>
+<br/>
+<br />
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Id_Producto</th>
+            <th>Nombre</th>
+            <th>Categoria</th>
+            <th>Marca</th>
+            <th>Precio_Compra</th>
+            <th>Precio_Venta</th>
+            <th>Descripcion</th>
+
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var producto in @productos)
+        {
+        <tr>
+            <th>Id_Producto</th>
+            <td>@producto.Nombre</td>
+            <td>@producto.Categoria</td>
+            <td>@producto.Marca</td>
+            <td>@producto.Precio_Compra</td>
+            <td>@producto.Precio_Venta</td>
+            <td>@producto.Descripcion</td>
+           
+
+            <td>
+                <button class="btn btn-primary" @onclick="@(e => GetById(@producto.Id_Producto))" style="float:left;">Edit</button>
+                <button class="btn btn-danger" @onclick="@(e=> Delete(@producto))" style="margin-left:5px;float:left;">Delete</button>
+            </td>
+        </tr>
+
+        }
+
+    </tbody>
+</table>
+
+
+@code {
+    List<Producto> productos = new List<Producto>();
+    Producto producto = new Producto();
+    string Message = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        GetProductos();
+    }
+
+
+
+    private void GetProductos()
+    {
+        productos = productoRepositorio.GetProductos();
+    }
+    private void GetById(int Idproducto)
+    {
+        producto = productoRepositorio.GetById(Idproducto);
+    }
+    private void Save()
+    {
+        var productoObj = new Producto();
+        productoObj = productoRepositorio.SaveOrUpdate(producto);
+        producto = new Producto();
+        GetProductos();
+    }
+    private void Delete(Producto oProducto)
+    {
+        Message = productoRepositorio.Delete(oProducto.Id_Producto);
+        productos.RemoveAll(x => x.Id_Producto == oProducto.Id_Producto);
+    }
+}
